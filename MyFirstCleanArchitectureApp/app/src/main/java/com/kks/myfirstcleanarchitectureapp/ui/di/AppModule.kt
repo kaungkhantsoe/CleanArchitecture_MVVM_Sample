@@ -54,10 +54,7 @@ object AppModule {
             .build()
     }
 
-    @Provides
-    fun provideAppDb(context: BaseApplication): AppDb? {
-        return AppDb.getInstance(context)
-    }
+
 
     @Provides
     fun provideRemoteNetwork(retrofit: Retrofit): Api {

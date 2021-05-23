@@ -4,10 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kks.myfirstcleanarchitectureapp.framework.db.AppDb
 import com.kks.myfirstcleanarchitectureapp.ui.common.ScreenState
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toPresentationModel
 import com.kks.myfirstcleanarchitectureapp.ui.common.DataState
-import com.kks.usecases.GetMovies
+import com.kks.myfirstcleanarchitectureapp.ui.util.NetworkUtil
+import com.kks.usecases.MovieUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -23,38 +25,68 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel
 @Inject constructor(
-    private val getMovies: GetMovies
+    private val movieUseCase: MovieUseCase,
+    private val db: AppDb,
+    private val networkUtil: NetworkUtil
 ) : ViewModel() {
 
-    private lateinit var _dataState: MutableLiveData<ScreenState<DataState>>
+    private lateinit var _screenState: MutableLiveData<ScreenState<DataState>>
+    private var _pageNumber: Int = 1
+    private var _isRefreshed = false
 
-    val dataState: LiveData<ScreenState<DataState>>
-        get() {
-            if (!::_dataState.isInitialized) {
-                _dataState = MutableLiveData()
-                _dataState.value = ScreenState.Loading
-                loadMovies()
-            }
+    var pageNumber: Int = _pageNumber
+        set(value) {
+            field = value
 
-            return _dataState
+            _isRefreshed = value == 1 && networkUtil.IsNetworkAvailable()
+
+            if (!_isRefreshed) queryMoviesFromDb(value)
+            else loadMoviesFromRemote(value)
         }
 
-    fun loadMovies(page: Int = 1) = viewModelScope.launch {
+    val screenState: LiveData<ScreenState<DataState>>
+        get() {
+            if (!::_screenState.isInitialized) {
+                _screenState = MutableLiveData()
+                _screenState.value = ScreenState.Loading
+                queryMoviesFromDb()
+            }
+
+            return _screenState
+        }
+
+    private fun queryMoviesFromDb(page: Int = 1) = viewModelScope.launch {
+        val movies = db.MovieDao().getMoviesFrom(page)
+        if (movies.isNullOrEmpty())  {
+            if (networkUtil.IsNetworkAvailable()) loadMoviesFromRemote(page)
+            else _screenState.value = ScreenState.Render(DataState.EndReach)
+        }
+        else _screenState.value = ScreenState.Render(DataState.Success(movies))
+    }
+
+    private fun loadMoviesFromRemote(page: Int = 1) = viewModelScope.launch {
         try {
-            flow { emit(getMovies.run(page)) }
+            flow { emit(movieUseCase.getMoviesFromRemote(page)) }
                 .flowOn(Dispatchers.IO)
                 .catch { throwable ->
-                    _dataState.value = ScreenState.Render(
+                    _screenState.value = ScreenState.Render(
                         DataState.Error(
                             throwable.localizedMessage ?: "Network error"
                         )
                     )
                 }
                 .collect {
-                    _dataState.value = ScreenState.Render(DataState.Success(it.toPresentationModel().results))
+                    if (it.results.isEmpty())
+                        _screenState.value = ScreenState.Render(DataState.EndReach)
+                    else {
+                        db.MovieDao().insertMovies(it.toPresentationModel().results)
+                        _screenState.value =
+                            ScreenState.Render(DataState.Success(it.toPresentationModel().results))
+                    }
                 }
         } catch (e: Exception) {
-            _dataState.value = ScreenState.Render(DataState.Error(e.localizedMessage ?: "Network error"))
+            _screenState.value =
+                ScreenState.Render(DataState.Error(e.localizedMessage ?: "Network error"))
         }
     }
 

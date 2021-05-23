@@ -20,15 +20,27 @@ abstract class AppDb : RoomDatabase() {
     abstract fun MovieDao(): MovieDao
 
     companion object {
-        var DB_NAME = "CAMovie.DB"
-        var instance: AppDb? = null
-        fun getInstance(context: Context?): AppDb? {
-            return if (instance != null) {
+        // Singleton prevents multiple instances of database opening at the
+        // same time.
+        @Volatile
+        private var INSTANCE: AppDb? = null
+
+        fun getDatabase(context: Context): AppDb {
+            // if the INSTANCE is not null, then return it,
+            // if it is, then create the database
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDb::class.java,
+                    "CAMovie"
+                )
+                    .fallbackToDestructiveMigration()
+                    .allowMainThreadQueries()
+                    .build()
+                INSTANCE = instance
+                // return instance
                 instance
-            } else Room.databaseBuilder(context!!, AppDb::class.java, DB_NAME)
-                .fallbackToDestructiveMigration()
-                .allowMainThreadQueries()
-                .build()
+            }
         }
     }
 }

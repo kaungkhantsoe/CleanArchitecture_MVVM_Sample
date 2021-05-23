@@ -18,11 +18,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/image_movie"
+            <com.yayandroid.parallaxrecyclerview.ParallaxImageView
+                android:id="@+id/image_movie_poster"
+                android:scaleType="centerCrop"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
+            <View
+                android:background="@drawable/gradient_black"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
             <TextView
                 android:id="@+id/text_movie_title"
                 android:textStyle="bold"

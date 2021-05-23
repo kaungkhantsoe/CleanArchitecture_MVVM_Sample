@@ -6,6 +6,7 @@ import com.kks.domain.Movie as DomainMovie
 import com.kks.myfirstcleanarchitectureapp.common.Pageable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * Created by kaungkhantsoe on 5/18/21.
@@ -23,7 +24,11 @@ data class Movie(
     @SerialName("poster_path")
     val posterPath: String,
 
-    val overview: String): Pageable
+    val overview: String,
+
+    @Transient
+    val pageNumber: Int = 1
+    ): Pageable
 
 fun DomainMovie.toPresentationModel(): Movie = Movie(
     id,original_title,poster_path,overview
@@ -32,3 +37,4 @@ fun DomainMovie.toPresentationModel(): Movie = Movie(
 fun Movie.toDomainModel(): DomainMovie = DomainMovie(
     id,originalTitle,posterPath,overview
 )
+
