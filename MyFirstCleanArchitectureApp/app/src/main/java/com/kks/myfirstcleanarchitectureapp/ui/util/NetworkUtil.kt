@@ -10,7 +10,7 @@ import android.os.Build
  **/
 class NetworkUtil(private val context: Context) {
 
-    fun IsNetworkAvailable() : Boolean{
+    fun isNetworkAvailable() : Boolean{
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val nw      = connectivityManager.activeNetwork ?: return false

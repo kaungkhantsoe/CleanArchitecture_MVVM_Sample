@@ -1,6 +1,9 @@
 package com.kks.myfirstcleanarchitectureapp.ui.mvvm.view.main
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.viewModels
@@ -73,6 +76,9 @@ MainListener{
             is DataState.Success -> {
                 if(renderState.data is List<*>) {
                     addMovies(renderState.data as List<Movie>)
+//                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+//                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+//                    },10000)
                 }
             }
             is DataState.Error -> {
@@ -101,28 +107,13 @@ MainListener{
     }
 
     override fun onClickMovie(id: Int,view: View) {
-        // Construct an Intent as normal
-        // Construct an Intent as normal
+
         val intent = Intent(this@MainActivity, MovieDetailActivity::class.java)
         intent.putExtra(MovieDetailActivity.ID_EXTRA, id)
 
-        // BEGIN_INCLUDE(start_activity)
-        /*
-     * Now create an {@link android.app.ActivityOptions} instance using the
-     * {@link ActivityOptionsCompat#makeSceneTransitionAnimation(Activity, Pair[])} factory
-     * method.
-     */
-
-        // BEGIN_INCLUDE(start_activity)
-        /*
-     * Now create an {@link android.app.ActivityOptions} instance using the
-     * {@link ActivityOptionsCompat#makeSceneTransitionAnimation(Activity, Pair[])} factory
-     * method.
-     */
         val activityOptions: ActivityOptionsCompat =
             ActivityOptionsCompat.makeSceneTransitionAnimation(
-                this@MainActivity,  // Now we provide a list of Pair items which contain the view we can transitioning
-                // from, and the name of the view it is transitioning to, in the launched activity
+                this@MainActivity,
                 Pair(
                     view,
                     MovieDetailActivity.VIEW_NAME_MOVIE_POSTER
@@ -130,11 +121,7 @@ MainListener{
 
             )
 
-        // Now we can start the Activity, providing the activity options as a bundle
-
-        // Now we can start the Activity, providing the activity options as a bundle
         ActivityCompat.startActivity(this@MainActivity, intent, activityOptions.toBundle())
-        // END_INCLUDE(start_activity)
     }
 
 }

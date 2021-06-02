@@ -163,6 +163,12 @@ abstract class BaseAdapter @JvmOverloads constructor(items: List<Pageable>? = nu
         }
     }
 
+    fun updateList(newItems: List<Pageable>) {
+        itemsList.clear()
+        itemsList.addAll(newItems)
+        notifyDataSetChanged()
+    }
+
     /**
      * Remove one pagable data from a specific position in adapter
      *

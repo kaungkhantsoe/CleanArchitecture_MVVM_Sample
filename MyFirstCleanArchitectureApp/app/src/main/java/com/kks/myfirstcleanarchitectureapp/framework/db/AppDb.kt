@@ -16,18 +16,13 @@ import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
     version = 1
 )
 abstract class AppDb : RoomDatabase() {
-    // define dao
     abstract fun MovieDao(): MovieDao
 
     companion object {
-        // Singleton prevents multiple instances of database opening at the
-        // same time.
         @Volatile
         private var INSTANCE: AppDb? = null
 
         fun getDatabase(context: Context): AppDb {
-            // if the INSTANCE is not null, then return it,
-            // if it is, then create the database
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,

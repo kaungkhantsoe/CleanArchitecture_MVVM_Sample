@@ -51,7 +51,7 @@ class MainAdapter(
             Glide.with(view.context)
                 .load("https://image.tmdb.org/t/p/w500${movie.posterPath}")
                 .into(binding.imageMoviePoster)
-            binding.textMovieTitle.text = movie.originalTitle
+            binding.textMovieTitle.text = "${adapterPosition+1} ${movie.originalTitle}"
 
             itemView.setOnClickListener {
                 listener.onClickMovie(movie.id,binding.imageMoviePoster)

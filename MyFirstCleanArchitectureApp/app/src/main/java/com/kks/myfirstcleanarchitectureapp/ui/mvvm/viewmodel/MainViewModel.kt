@@ -1,5 +1,6 @@
 package com.kks.myfirstcleanarchitectureapp.ui.mvvm.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import com.kks.myfirstcleanarchitectureapp.framework.db.AppDb
 import com.kks.myfirstcleanarchitectureapp.ui.common.ScreenState
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toPresentationModel
 import com.kks.myfirstcleanarchitectureapp.ui.common.DataState
+import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
 import com.kks.myfirstcleanarchitectureapp.ui.util.NetworkUtil
 import com.kks.usecases.MovieUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,15 +32,18 @@ class MainViewModel
     private val networkUtil: NetworkUtil
 ) : ViewModel() {
 
+    private val TAG = "MainViewModel"
+
     private lateinit var _screenState: MutableLiveData<ScreenState<DataState>>
     private var _pageNumber: Int = 1
     private var _isRefreshed = false
+    private var _loadedMovies = mutableListOf<Movie>()
 
     var pageNumber: Int = _pageNumber
         set(value) {
             field = value
 
-            _isRefreshed = value == 1 && networkUtil.IsNetworkAvailable()
+            _isRefreshed = value == 1 && networkUtil.isNetworkAvailable()
 
             if (!_isRefreshed) queryMoviesFromDb(value)
             else loadMoviesFromRemote(value)
@@ -47,24 +52,32 @@ class MainViewModel
     val screenState: LiveData<ScreenState<DataState>>
         get() {
             if (!::_screenState.isInitialized) {
+                Log.d(TAG, "Initializing Screenstate: ")
                 _screenState = MutableLiveData()
                 _screenState.value = ScreenState.Loading
                 queryMoviesFromDb()
             }
+            _screenState.value = ScreenState.Render(DataState.Success(_loadedMovies))
 
             return _screenState
         }
 
     private fun queryMoviesFromDb(page: Int = 1) = viewModelScope.launch {
+        if (page == 1) _loadedMovies.clear()
+
         val movies = db.MovieDao().getMoviesFrom(page)
-        if (movies.isNullOrEmpty())  {
-            if (networkUtil.IsNetworkAvailable()) loadMoviesFromRemote(page)
+        if (movies.isNullOrEmpty()) {
+            if (networkUtil.isNetworkAvailable()) loadMoviesFromRemote(page)
             else _screenState.value = ScreenState.Render(DataState.EndReach)
+        } else {
+            _screenState.value = ScreenState.Render(DataState.Success(movies))
+            _loadedMovies.addAll(movies)
         }
-        else _screenState.value = ScreenState.Render(DataState.Success(movies))
     }
 
     private fun loadMoviesFromRemote(page: Int = 1) = viewModelScope.launch {
+        if (page == 1) _loadedMovies.clear()
+
         try {
             flow { emit(movieUseCase.getMoviesFromRemote(page)) }
                 .flowOn(Dispatchers.IO)
@@ -80,6 +93,7 @@ class MainViewModel
                         _screenState.value = ScreenState.Render(DataState.EndReach)
                     else {
                         db.MovieDao().insertMovies(it.toPresentationModel().results)
+                        _loadedMovies.addAll(it.toPresentationModel().results)
                         _screenState.value =
                             ScreenState.Render(DataState.Success(it.toPresentationModel().results))
                     }
@@ -89,24 +103,5 @@ class MainViewModel
                 ScreenState.Render(DataState.Error(e.localizedMessage ?: "Network error"))
         }
     }
-
-//        GlobalScope.launch(Dispatchers.Main) {
-//        val state = try {
-//            ScreenState.Render(
-//                DataState.Success(
-//
-//                    withContext(Dispatchers.IO) { getMovies(page) }.toPresentationModel().results
-//                )
-//            )
-//
-//        } catch (e: Exception) {
-//            ScreenState.Render(DataState.Error(e.localizedMessage ?: "Network error"))
-//        }
-//        _dataState.value = state
-//    }
-
-//    private fun onMovieLoaded() {
-//        _movieListState.value = ScreenState.Render(MovieListState.ShowMovies(mov))
-//    }
 
 }
