@@ -1,9 +1,7 @@
 package com.kks.myfirstcleanarchitectureapp.ui.mvvm.view.main
 
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.viewModels
@@ -26,6 +24,7 @@ import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.view.moviedetail.MovieDetailActivity
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -63,15 +62,22 @@ MainListener{
     }
 
     private fun updateUI(screenState: ScreenState<DataState>) {
+        Timber.tag("MainActivity").d(screenState.toString())
         when (screenState) {
-            ScreenState.Loading -> binding.progress.visible()
+            ScreenState.Loading -> {
+                binding.progress.visible(true)
+            }
             is ScreenState.Render -> processRenderState(screenState.renderState)
         }
     }
 
     private fun processRenderState(renderState: DataState) {
-        binding.progress.gone()
-        adapter.clearFooter()
+
+        //Just to make progress visible a while in case of fast data fetch
+        Handler(mainLooper).postDelayed({
+            binding.progress.gone(true)
+        },1000)
+
         when(renderState) {
             is DataState.Success -> {
                 if(renderState.data is List<*>) {
@@ -102,7 +108,6 @@ MainListener{
     }
 
     override fun onListEndReach() {
-        adapter.showLoading()
         viewModel.pageNumber++
     }
 

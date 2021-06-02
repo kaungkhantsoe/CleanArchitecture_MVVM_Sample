@@ -1,6 +1,5 @@
 package com.kks.myfirstcleanarchitectureapp.ui.mvvm.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,8 +31,6 @@ class MainViewModel
     private val networkUtil: NetworkUtil
 ) : ViewModel() {
 
-    private val TAG = "MainViewModel"
-
     private lateinit var _screenState: MutableLiveData<ScreenState<DataState>>
     private var _pageNumber: Int = 1
     private var _isRefreshed = false
@@ -41,6 +38,8 @@ class MainViewModel
 
     var pageNumber: Int = _pageNumber
         set(value) {
+            _screenState.value = ScreenState.Loading
+
             field = value
 
             _isRefreshed = value == 1 && networkUtil.isNetworkAvailable()
@@ -52,7 +51,6 @@ class MainViewModel
     val screenState: LiveData<ScreenState<DataState>>
         get() {
             if (!::_screenState.isInitialized) {
-                Log.d(TAG, "Initializing Screenstate: ")
                 _screenState = MutableLiveData()
                 _screenState.value = ScreenState.Loading
                 queryMoviesFromDb()
