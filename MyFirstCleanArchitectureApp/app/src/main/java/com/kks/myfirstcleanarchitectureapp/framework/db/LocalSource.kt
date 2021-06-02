@@ -4,6 +4,7 @@ import com.kks.data.LocalDataSource
 import com.kks.domain.Movie as DomainMovie
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toDomainModel
+import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toPresentationModel
 import javax.inject.Inject
 
 /**
@@ -18,7 +19,11 @@ class LocalSource
         return db.MovieDao().getMoviesFrom(page).map(Movie::toDomainModel)
     }
 
-    override fun getMovieWith(id: Int): com.kks.domain.Movie {
+    override fun getMovieWith(id: Int): DomainMovie {
         return db.MovieDao().getMovieWith(id).toDomainModel()
+    }
+
+    override fun insertMovieList(list: List<DomainMovie>) {
+        db.MovieDao().insertMovies(list.map(DomainMovie::toPresentationModel))
     }
 }

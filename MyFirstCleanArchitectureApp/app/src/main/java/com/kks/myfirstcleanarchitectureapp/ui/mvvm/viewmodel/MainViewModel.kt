@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kks.myfirstcleanarchitectureapp.framework.db.AppDb
 import com.kks.myfirstcleanarchitectureapp.ui.common.ScreenState
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toPresentationModel
 import com.kks.myfirstcleanarchitectureapp.ui.common.DataState
@@ -19,6 +18,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.kks.domain.Movie as DomainMovie
 
 /**
  * Created by kaungkhantsoe on 18/05/2021.
@@ -27,7 +27,6 @@ import javax.inject.Inject
 class MainViewModel
 @Inject constructor(
     private val movieUseCase: MovieUseCase,
-    private val db: AppDb,
     private val networkUtil: NetworkUtil
 ) : ViewModel() {
 
@@ -63,7 +62,7 @@ class MainViewModel
     private fun queryMoviesFromDb(page: Int = 1) = viewModelScope.launch {
         if (page == 1) _loadedMovies.clear()
 
-        val movies = db.MovieDao().getMoviesFrom(page)
+        val movies = movieUseCase.getMoviesFromLocal(page).map(DomainMovie::toPresentationModel)
         if (movies.isNullOrEmpty()) {
             if (networkUtil.isNetworkAvailable()) loadMoviesFromRemote(page)
             else _screenState.value = ScreenState.Render(DataState.EndReach)
@@ -82,7 +81,7 @@ class MainViewModel
                 .catch { throwable ->
                     _screenState.value = ScreenState.Render(
                         DataState.Error(
-                            throwable.localizedMessage ?: "Network error"
+                            throwable.localizedMessage ?: "Unknown error"
                         )
                     )
                 }
@@ -90,15 +89,21 @@ class MainViewModel
                     if (it.results.isEmpty())
                         _screenState.value = ScreenState.Render(DataState.EndReach)
                     else {
-                        db.MovieDao().insertMovies(it.toPresentationModel().results)
+                        movieUseCase.insertMovies(it.results)
                         _loadedMovies.addAll(it.toPresentationModel().results)
+
                         _screenState.value =
-                            ScreenState.Render(DataState.Success(it.toPresentationModel().results))
+                            ScreenState.Render(
+                                DataState.Success(
+
+                                    it.toPresentationModel().results
+                                )
+                            )
                     }
                 }
         } catch (e: Exception) {
             _screenState.value =
-                ScreenState.Render(DataState.Error(e.localizedMessage ?: "Network error"))
+                ScreenState.Render(DataState.Error(e.localizedMessage ?: "Unknown error"))
         }
     }
 

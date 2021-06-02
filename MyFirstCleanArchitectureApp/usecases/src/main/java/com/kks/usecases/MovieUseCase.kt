@@ -11,4 +11,5 @@ class MovieUseCase(private val movieRepository: MovieRepository) {
     suspend fun getMoviesFromRemote(page: Int = 1): MovieList = movieRepository.getRemoteMovieListForPage(page)
     fun getMoviesFromLocal(page: Int = 1): List<Movie> = movieRepository.getLocalMovieListForPage(page)
     fun getMovie(id: Int): Movie = movieRepository.getMovie(id)
+    fun insertMovies(list: List<Movie>) = movieRepository.insertMovies(list)
 }

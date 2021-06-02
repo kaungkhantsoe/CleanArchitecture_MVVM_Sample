@@ -14,6 +14,7 @@ class MovieRepository(
     suspend fun getRemoteMovieListForPage(page: Int) = remoteDataSource.requestMovieListFor(page)
     fun getLocalMovieListForPage(page: Int) = localSource.getMovieListFor(page)
     fun getMovie(id: Int) = localSource.getMovieWith(id)
+    fun insertMovies(list: List<Movie>) = localSource.insertMovieList(list)
 }
 
 interface RemoteDataSource {
@@ -24,4 +25,5 @@ interface RemoteDataSource {
 interface LocalDataSource {
     fun getMovieListFor(page: Int): List<Movie>
     fun getMovieWith(id: Int):Movie
+    fun insertMovieList(list: List<Movie>)
 }
