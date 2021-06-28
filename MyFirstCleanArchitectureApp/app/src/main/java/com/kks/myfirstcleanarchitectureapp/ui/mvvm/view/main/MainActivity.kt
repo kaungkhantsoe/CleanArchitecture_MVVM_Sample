@@ -32,7 +32,7 @@ import javax.inject.Inject
 class MainActivity : ViewBindingActivity<ActivityMainBinding>(),
     SwipeRefreshLayout.OnRefreshListener,
     SmartScrollListener.OnSmartScrollListener,
-MainListener{
+    MainListener {
 
     @Inject
     lateinit var requestManager: RequestManager
@@ -42,7 +42,7 @@ MainListener{
     private lateinit var layoutManager: LinearLayoutManager
 
     private val adapter by lazy {
-        MainAdapter(requestManager,this)
+        MainAdapter(requestManager, this)
     }
 
     override val bindingInflater: (LayoutInflater) -> ActivityMainBinding
@@ -52,7 +52,7 @@ MainListener{
 
         binding.swipeRefresh.setOnRefreshListener(this)
 
-        layoutManager = LinearLayoutManager(this,RecyclerView.VERTICAL,false)
+        layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         binding.recyclerMovieList.adapter = adapter
         binding.recyclerMovieList.layoutManager = layoutManager
         binding.recyclerMovieList.setHasFixedSize(true)
@@ -62,7 +62,6 @@ MainListener{
     }
 
     private fun updateUI(screenState: ScreenState<DataState>) {
-        Timber.tag("MainActivity").d(screenState.toString())
         when (screenState) {
             ScreenState.Loading -> {
                 binding.progress.visible(true)
@@ -76,11 +75,11 @@ MainListener{
         //Just to make progress visible a while in case of fast data fetch
         Handler(mainLooper).postDelayed({
             binding.progress.gone(true)
-        },1000)
+        }, 1000)
 
-        when(renderState) {
+        when (renderState) {
             is DataState.Success -> {
-                if(renderState.data is List<*>) {
+                if (renderState.data is List<*>) {
                     addMovies(renderState.data as List<Movie>)
 //                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
 //                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
@@ -91,7 +90,11 @@ MainListener{
                 showToast(renderState.message)
             }
             is DataState.EndReach -> {
-                Snackbar.make(binding.contextView,"You have reached the end",Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(
+                    binding.contextView,
+                    "You have reached the end",
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -111,7 +114,7 @@ MainListener{
         viewModel.pageNumber++
     }
 
-    override fun onClickMovie(id: Int,view: View) {
+    override fun onClickMovie(id: Int, view: View) {
 
         val intent = Intent(this@MainActivity, MovieDetailActivity::class.java)
         intent.putExtra(MovieDetailActivity.ID_EXTRA, id)

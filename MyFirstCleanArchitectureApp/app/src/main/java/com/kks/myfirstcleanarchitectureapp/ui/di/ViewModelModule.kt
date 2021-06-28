@@ -6,14 +6,13 @@ import com.kks.myfirstcleanarchitectureapp.framework.data.RemoteSource
 import com.kks.myfirstcleanarchitectureapp.framework.db.AppDb
 import com.kks.myfirstcleanarchitectureapp.framework.db.LocalSource
 import com.kks.myfirstcleanarchitectureapp.ui.BaseApplication
+import com.kks.myfirstcleanarchitectureapp.ui.util.NetworkListener
 import com.kks.myfirstcleanarchitectureapp.ui.util.NetworkUtil
 import com.kks.usecases.MovieUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-import org.jetbrains.annotations.Nullable
-
 
 /**
  * Created by kaungkhantsoe on 19/05/2021.
@@ -23,7 +22,7 @@ import org.jetbrains.annotations.Nullable
 object ViewModelModule {
 
     @Provides
-    fun provideNetworkUtil(context: BaseApplication): NetworkUtil {
+    fun provideNetworkUtil(context: BaseApplication): NetworkListener {
         return NetworkUtil(context)
     }
 

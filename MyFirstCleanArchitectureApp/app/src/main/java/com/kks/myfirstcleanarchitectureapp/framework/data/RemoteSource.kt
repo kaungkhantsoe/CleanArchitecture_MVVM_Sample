@@ -10,7 +10,7 @@ import javax.inject.Inject
 /**
  * Created by kaungkhantsoe on 5/18/21.
  **/
-class RemoteSource
+open class RemoteSource
 @Inject
 constructor(
     private val api: Api

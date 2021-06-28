@@ -19,8 +19,8 @@ class LocalSource
         return db.MovieDao().getMoviesFrom(page).map(Movie::toDomainModel)
     }
 
-    override fun getMovieWith(id: Int): DomainMovie {
-        return db.MovieDao().getMovieWith(id).toDomainModel()
+    override fun getMovieWith(id: Int): DomainMovie? {
+        return db.MovieDao().getMovieWith(id)?.toDomainModel()
     }
 
     override fun insertMovieList(list: List<DomainMovie>) {

@@ -27,7 +27,7 @@ data class Movie(
     val overview: String,
 
     @Transient
-    var pageNumber: Int = 1
+    var pageNumber: Int? = 1
     ): Pageable
 
 fun DomainMovie.toPresentationModel(): Movie = Movie(

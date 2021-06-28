@@ -2,19 +2,14 @@ package com.kks.myfirstcleanarchitectureapp.ui.di
 
 import android.app.Application
 import android.content.Context
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.kks.data.MovieRepository
 import com.kks.myfirstcleanarchitectureapp.R
 import com.kks.myfirstcleanarchitectureapp.framework.data.Api
-import com.kks.myfirstcleanarchitectureapp.framework.data.RemoteSource
-import com.kks.myfirstcleanarchitectureapp.framework.db.AppDb
 import com.kks.myfirstcleanarchitectureapp.ui.BaseApplication
 import com.kks.myfirstcleanarchitectureapp.ui.common.Constants.BASE_URL
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +20,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import javax.inject.Singleton
 
 /**
  * Created by kaungkhantsoe on 5/18/21.

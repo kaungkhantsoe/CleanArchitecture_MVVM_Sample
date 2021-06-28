@@ -32,7 +32,7 @@ class MovieDetailActivity: ViewBindingActivity<ActivityMovieDetailBinding>() {
     @Inject
     lateinit var requestManager: RequestManager
 
-    lateinit var movie: Movie
+    var movie: Movie? = null
 
     override val bindingInflater: (LayoutInflater) -> ActivityMovieDetailBinding
         get() = ActivityMovieDetailBinding::inflate
@@ -55,13 +55,13 @@ class MovieDetailActivity: ViewBindingActivity<ActivityMovieDetailBinding>() {
     }
 
     private fun loadItem() {
-        binding.textOverview.text = movie.overview
+        binding.textOverview.text = movie?.overview
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && addTransitionListener()) {
             // If we're running on Lollipop and we have added a listener to the shared element
             // transition, load the thumbnail. The listener will load the full-size image when
             // the transition is complete.
-            requestManager.load("https://image.tmdb.org/t/p/w500${movie.posterPath}")
+            requestManager.load("https://image.tmdb.org/t/p/w500${movie?.posterPath}")
                 .into(binding.imageMovie)
 //            loadThumbnail()
         } else {

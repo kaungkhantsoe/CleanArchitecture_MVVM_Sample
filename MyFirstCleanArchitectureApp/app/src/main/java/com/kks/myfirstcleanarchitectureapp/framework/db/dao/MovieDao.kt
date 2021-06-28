@@ -13,13 +13,13 @@ import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
 interface MovieDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMovies(movie: Movie)
+    fun insertMovie(movie: Movie)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMovies(movies: List<Movie>)
 
     @Query("SELECT * FROM movie WHERE id = :id ")
-    fun getMovieWith(id: Int): Movie
+    fun getMovieWith(id: Int): Movie?
 
     @Query("SELECT * FROM movie WHERE pageNumber = :pageNumber")
     fun getMoviesFrom(pageNumber: Int): List<Movie>

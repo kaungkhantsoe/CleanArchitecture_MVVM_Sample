@@ -8,12 +8,14 @@ import android.os.Build
 /**
  * Created by kaungkhantsoe on 20/05/2021.
  **/
-class NetworkUtil(private val context: Context) {
+open class NetworkUtil(private val context: Context): NetworkListener {
 
-    fun isNetworkAvailable() : Boolean{
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    override fun isNetworkAvailable(): Boolean {
+
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val nw      = connectivityManager.activeNetwork ?: return false
+            val nw = connectivityManager.activeNetwork ?: return false
             val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
             return when {
                 actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
@@ -29,4 +31,8 @@ class NetworkUtil(private val context: Context) {
             return nwInfo.isConnected
         }
     }
+}
+
+interface NetworkListener {
+    fun isNetworkAvailable(): Boolean
 }

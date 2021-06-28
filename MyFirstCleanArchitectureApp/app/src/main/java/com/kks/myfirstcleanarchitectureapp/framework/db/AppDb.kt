@@ -13,7 +13,7 @@ import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
 @Database(
     entities = [Movie::class],
     exportSchema = false,
-    version = 1
+    version = 2
 )
 abstract class AppDb : RoomDatabase() {
     abstract fun MovieDao(): MovieDao

@@ -4,10 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kks.myfirstcleanarchitectureapp.ui.common.ScreenState
-import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toPresentationModel
 import com.kks.myfirstcleanarchitectureapp.ui.common.DataState
+import com.kks.myfirstcleanarchitectureapp.ui.common.ScreenState
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
+import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toPresentationModel
+import com.kks.myfirstcleanarchitectureapp.ui.util.NetworkListener
 import com.kks.myfirstcleanarchitectureapp.ui.util.NetworkUtil
 import com.kks.usecases.MovieUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +28,7 @@ import com.kks.domain.Movie as DomainMovie
 class MainViewModel
 @Inject constructor(
     private val movieUseCase: MovieUseCase,
-    private val networkUtil: NetworkUtil
+    private val networkUtil: NetworkListener
 ) : ViewModel() {
 
     private lateinit var _screenState: MutableLiveData<ScreenState<DataState>>
@@ -51,10 +52,16 @@ class MainViewModel
         get() {
             if (!::_screenState.isInitialized) {
                 _screenState = MutableLiveData()
-                _screenState.value = ScreenState.Loading
+
+                viewModelScope.launch(Dispatchers.Main) {
+                    _screenState.value = ScreenState.Loading
+                }
+
                 queryMoviesFromDb()
             }
-            _screenState.value = ScreenState.Render(DataState.Success(_loadedMovies))
+//            viewModelScope.launch(Dispatchers.Main) {
+//                _screenState.value = ScreenState.Render(DataState.Success(_loadedMovies))
+//            }
 
             return _screenState
         }
@@ -86,19 +93,40 @@ class MainViewModel
                     )
                 }
                 .collect {
-                    if (it.results.isEmpty())
-                        _screenState.value = ScreenState.Render(DataState.EndReach)
-                    else {
-                        movieUseCase.insertMovies(it.results)
-                        _loadedMovies.addAll(it.toPresentationModel().results)
-
-                        _screenState.value =
-                            ScreenState.Render(
-                                DataState.Success(
-
-                                    it.toPresentationModel().results
+                    when {
+                        it.errors?.isNotEmpty() == true -> {
+                            _screenState.value =
+                                ScreenState.Render(
+                                    DataState.Error(it.errors!![0])
                                 )
-                            )
+                        }
+                        it.success == false -> {
+                            _screenState.value =
+                                ScreenState.Render(
+                                    DataState.Error(it.status_message ?: "")
+                                )
+                        }
+                        else -> {
+                            it.results?.let { results ->
+                                if (results.isEmpty())
+                                    _screenState.value = ScreenState.Render(DataState.EndReach)
+                                else {
+                                    movieUseCase.insertMovies(results)
+                                    _loadedMovies.addAll(results.map { movie ->
+                                        movie.toPresentationModel()
+                                    })
+
+                                    _screenState.value =
+                                        ScreenState.Render(
+                                            DataState.Success(
+                                                results.map { movie ->
+                                                    movie.toPresentationModel()
+                                                }
+                                            )
+                                        )
+                                }
+                            }
+                        }
                     }
                 }
         } catch (e: Exception) {

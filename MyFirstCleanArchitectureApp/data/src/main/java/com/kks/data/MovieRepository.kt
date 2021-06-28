@@ -24,6 +24,6 @@ interface RemoteDataSource {
 
 interface LocalDataSource {
     fun getMovieListFor(page: Int): List<Movie>
-    fun getMovieWith(id: Int):Movie
+    fun getMovieWith(id: Int): Movie?
     fun insertMovieList(list: List<Movie>)
 }

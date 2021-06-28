@@ -14,6 +14,9 @@ buildscript {
     ext.room_version = "2.3.0"
     ext.infinite_scroll_version = "0.0.3"
     ext.paralax_version = "1.1"
+    ext.mockito_version = "3.2.0"
+    ext.timber_version = "4.7.1"
+    ext.google_truth_version = "1.1.3"
 
     repositories {
         google()

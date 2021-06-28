@@ -17,7 +17,7 @@ constructor(
     private val movieUseCase: MovieUseCase
 ) : ViewModel()
 {
-    fun getDetail(id: Int): Movie =
-        movieUseCase.getMovie(id).toPresentationModel()
+    fun getDetail(id: Int): Movie? =
+        movieUseCase.getMovie(id)?.toPresentationModel()
 
 }
