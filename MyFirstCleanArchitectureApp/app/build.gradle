@@ -68,12 +68,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
-    // Kotlinx Converter
-    implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:$ktlxconverter_version"
-
-    // Kotlinx Json
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$ktlxjson_version"
-
     // Swipe refresh
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
@@ -86,6 +80,7 @@ dependencies {
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
     // Okhttp
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"

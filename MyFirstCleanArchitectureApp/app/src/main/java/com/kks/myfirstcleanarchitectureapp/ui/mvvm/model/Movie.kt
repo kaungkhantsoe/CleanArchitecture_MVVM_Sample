@@ -13,20 +13,16 @@ import kotlinx.serialization.Transient
  **/
 
 @Entity(tableName = "movie")
-@Serializable
 data class Movie(
     @PrimaryKey
     val id: Int,
 
-    @SerialName("original_title")
     val originalTitle: String,
 
-    @SerialName("poster_path")
     val posterPath: String,
 
     val overview: String,
 
-    @Transient
     var pageNumber: Int? = 1
     ): Pageable
 

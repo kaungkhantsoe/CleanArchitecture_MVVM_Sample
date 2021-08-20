@@ -5,7 +5,6 @@ import android.content.Context
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.kks.myfirstcleanarchitectureapp.R
 import com.kks.myfirstcleanarchitectureapp.framework.data.Api
 import com.kks.myfirstcleanarchitectureapp.ui.BaseApplication
@@ -20,6 +19,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * Created by kaungkhantsoe on 5/18/21.
@@ -34,17 +34,12 @@ object AppModule {
         return app as BaseApplication
     }
 
-    @ExperimentalSerializationApi
     @Provides
     fun provideRetrofitInstance(): Retrofit {
-        val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addConverterFactory(Json {
-                ignoreUnknownKeys = true
-                isLenient = true
-            }.asConverterFactory(contentType))
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 

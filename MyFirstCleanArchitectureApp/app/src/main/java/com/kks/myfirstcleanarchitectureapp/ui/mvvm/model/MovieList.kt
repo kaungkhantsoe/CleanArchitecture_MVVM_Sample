@@ -6,7 +6,6 @@ import com.kks.domain.MovieList as DomainMovieList
 /**
  * Created by kaungkhantsoe on 18/05/2021.
  **/
-@Serializable
 data class MovieList(
     val page: Int?,
     val results: List<Movie>?,
