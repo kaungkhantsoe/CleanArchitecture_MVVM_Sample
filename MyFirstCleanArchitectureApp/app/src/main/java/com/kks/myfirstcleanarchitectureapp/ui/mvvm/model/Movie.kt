@@ -4,9 +4,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kks.domain.Movie as DomainMovie
 import com.kks.myfirstcleanarchitectureapp.common.Pageable
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 /**
  * Created by kaungkhantsoe on 5/18/21.

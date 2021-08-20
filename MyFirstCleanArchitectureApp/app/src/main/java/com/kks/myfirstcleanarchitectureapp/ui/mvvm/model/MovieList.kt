@@ -1,6 +1,5 @@
 package com.kks.myfirstcleanarchitectureapp.ui.mvvm.model
 
-import kotlinx.serialization.Serializable
 import com.kks.domain.MovieList as DomainMovieList
 
 /**
