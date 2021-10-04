@@ -2,7 +2,7 @@ package com.kks.myfirstcleanarchitectureapp.ui.mvvm.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.kks.domain.Movie as DomainMovie
+import com.kks.domain.MovieRequest as DomainMovie
 import com.kks.myfirstcleanarchitectureapp.common.Pageable
 
 /**
@@ -24,7 +24,7 @@ data class Movie(
     ): Pageable
 
 fun DomainMovie.toPresentationModel(): Movie = Movie(
-    id,original_title,poster_path,overview
+    id,original_title ?: "",poster_path ?: "",overview ?: ""
 )
 
 fun Movie.toDomainModel(): DomainMovie = DomainMovie(

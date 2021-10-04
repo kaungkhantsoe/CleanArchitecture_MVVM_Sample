@@ -20,7 +20,7 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 
 @RunWith(MockitoJUnitRunner::class)
-class MovieDetailViewModelTest {
+class MovieRequestDetailViewModelTest {
 
     // region constants
 

@@ -2,7 +2,7 @@ package com.kks.myfirstcleanarchitectureapp.framework.data
 
 import com.kks.myfirstcleanarchitectureapp.*
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toDomainModel
-import com.kks.domain.MovieList as DomainMovieList
+import com.kks.domain.MovieListRequest as DomainMovieList
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before

@@ -51,19 +51,19 @@ fun getMovieList(isSuccess: Boolean = true): MovieList {
     }
 }
 
-fun getDomainMovieList(isSuccess: Boolean = true): com.kks.domain.MovieList {
+fun getDomainMovieList(isSuccess: Boolean = true): com.kks.domain.MovieListRequest {
     if (isSuccess) {
-        return com.kks.domain.MovieList(
+        return com.kks.domain.MovieListRequest(
             PAGE_ONE,
             listOf(
-                com.kks.domain.Movie(1, "title 1", "poster_path", "overview"),
-                com.kks.domain.Movie(2, "title 2", "poster_path", "overview")
+                com.kks.domain.MovieRequest(1, "title 1", "poster_path", "overview"),
+                com.kks.domain.MovieRequest(2, "title 2", "poster_path", "overview")
             ),
             1,
             2,
         )
     } else {
-        return com.kks.domain.MovieList(
+        return com.kks.domain.MovieListRequest(
             null,
             null,
             null,

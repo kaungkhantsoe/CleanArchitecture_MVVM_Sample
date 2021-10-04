@@ -1,7 +1,7 @@
 package com.kks.myfirstcleanarchitectureapp.framework.data
 
 import com.kks.data.RemoteDataSource
-import com.kks.domain.MovieList
+import com.kks.domain.MovieListRequest
 import com.kks.myfirstcleanarchitectureapp.ui.common.Constants.API_KEY
 import com.kks.myfirstcleanarchitectureapp.ui.common.Constants.language
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toDomainModel
@@ -16,7 +16,7 @@ constructor(
     private val api: Api
 ) : RemoteDataSource {
 
-    override suspend fun requestMovieListFor(page: Int): MovieList {
+    override suspend fun requestMovieListFor(page: Int): MovieListRequest {
         return api.getMovies(API_KEY, language, page).toDomainModel()
     }
 }

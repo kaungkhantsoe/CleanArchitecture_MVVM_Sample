@@ -1,9 +1,10 @@
-package com.kks.domain
+package com.kks.myfirstcleanarchitectureapp.ui.mvvm.model
+
+import com.kks.domain.MovieListRequest as DomainMovieList
 
 /**
- * Created by kaungkhantsoe on 5/18/21.
+ * Created by kaungkhantsoe on 18/05/2021.
  **/
-
 data class MovieList(
     val page: Int?,
     val results: List<Movie>?,
@@ -13,8 +14,7 @@ data class MovieList(
     var status_message: String? = null,
     var success: Boolean? = null,
     var errors: Array<String>? = null
-
-) {
+    ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -48,3 +48,27 @@ data class MovieList(
         return result
     }
 }
+
+fun DomainMovieList.toPresentationModel(): MovieList = MovieList (
+    page,
+    results?.map {
+        return@map Movie(it.id,it.original_title ?: "",it.poster_path ?: "",it.overview ?: "",page)
+    },
+    total_pages,
+    total_results,
+    status_code,
+    status_message,
+    success,
+    errors
+)
+
+fun MovieList.toDomainModel(): DomainMovieList = DomainMovieList (
+    page,
+    results?.map(Movie::toDomainModel),
+    total_pages,
+    total_results,
+    status_code,
+    status_message,
+    success,
+    errors
+)

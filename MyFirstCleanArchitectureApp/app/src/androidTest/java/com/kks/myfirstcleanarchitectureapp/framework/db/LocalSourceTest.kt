@@ -6,8 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.kks.myfirstcleanarchitectureapp.*
 import com.kks.myfirstcleanarchitectureapp.framework.db.dao.MovieDao
-import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
-import com.kks.domain.Movie as DomainMovie
+import com.kks.domain.MovieRequest as DomainMovie
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toDomainModel
 import org.junit.After
 import org.junit.Before

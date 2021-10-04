@@ -47,7 +47,7 @@ object ViewModelModule {
     }
 
     @Provides
-    fun provideGetMovies(movieRepository: MovieRepository): MovieUseCase {
+    fun provideMovieUseCase(movieRepository: MovieRepository): MovieUseCase {
         return MovieUseCase(movieRepository)
     }
 }

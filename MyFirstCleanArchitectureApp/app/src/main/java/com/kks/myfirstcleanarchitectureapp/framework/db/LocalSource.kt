@@ -1,7 +1,7 @@
 package com.kks.myfirstcleanarchitectureapp.framework.db
 
 import com.kks.data.LocalDataSource
-import com.kks.domain.Movie as DomainMovie
+import com.kks.domain.MovieRequest as DomainMovie
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toDomainModel
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toPresentationModel

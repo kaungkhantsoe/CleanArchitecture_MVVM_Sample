@@ -9,7 +9,6 @@ import com.kks.myfirstcleanarchitectureapp.ui.common.ScreenState
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.toPresentationModel
 import com.kks.myfirstcleanarchitectureapp.ui.util.NetworkListener
-import com.kks.myfirstcleanarchitectureapp.ui.util.NetworkUtil
 import com.kks.usecases.MovieUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +18,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.kks.domain.Movie as DomainMovie
+import com.kks.domain.MovieRequest as DomainMovie
 
 /**
  * Created by kaungkhantsoe on 18/05/2021.
@@ -38,7 +37,9 @@ class MainViewModel
 
     var pageNumber: Int = _pageNumber
         set(value) {
-            _screenState.value = ScreenState.Loading
+            _screenState.postValue(
+                ScreenState.Loading
+            )
 
             field = value
 
@@ -53,8 +54,10 @@ class MainViewModel
             if (!::_screenState.isInitialized) {
                 _screenState = MutableLiveData()
 
-                viewModelScope.launch(Dispatchers.Main) {
-                    _screenState.value = ScreenState.Loading
+                viewModelScope.launch(Dispatchers.IO) {
+                    _screenState.postValue(
+                        ScreenState.Loading
+                    )
                 }
 
                 queryMoviesFromDb()
@@ -66,57 +69,67 @@ class MainViewModel
             return _screenState
         }
 
-    private fun queryMoviesFromDb(page: Int = 1) = viewModelScope.launch {
+    private fun queryMoviesFromDb(page: Int = 1) = viewModelScope.launch(Dispatchers.IO) {
         if (page == 1) _loadedMovies.clear()
 
         val movies = movieUseCase.getMoviesFromLocal(page).map(DomainMovie::toPresentationModel)
         if (movies.isNullOrEmpty()) {
             if (networkUtil.isNetworkAvailable()) loadMoviesFromRemote(page)
-            else _screenState.value = ScreenState.Render(DataState.EndReach)
+            else _screenState.postValue(
+                ScreenState.Render(DataState.EndReach)
+            )
         } else {
-            _screenState.value = ScreenState.Render(DataState.Success(movies))
+            _screenState.postValue(
+                ScreenState.Render(DataState.Success(movies))
+            )
             _loadedMovies.addAll(movies)
         }
     }
 
-    private fun loadMoviesFromRemote(page: Int = 1) = viewModelScope.launch {
+    private fun loadMoviesFromRemote(page: Int = 1) = viewModelScope.launch(Dispatchers.IO) {
         if (page == 1) _loadedMovies.clear()
 
         try {
             flow { emit(movieUseCase.getMoviesFromRemote(page)) }
                 .flowOn(Dispatchers.IO)
                 .catch { throwable ->
-                    _screenState.value = ScreenState.Render(
-                        DataState.Error(
-                            throwable.localizedMessage ?: "Unknown error"
+                    _screenState.postValue(
+                        ScreenState.Render(
+                            DataState.Error(
+                                throwable.localizedMessage ?: "Unknown error"
+                            )
                         )
                     )
                 }
                 .collect {
                     when {
                         it.errors?.isNotEmpty() == true -> {
-                            _screenState.value =
+                            _screenState.postValue(
                                 ScreenState.Render(
                                     DataState.Error(it.errors!![0])
                                 )
+                            )
                         }
                         it.success == false -> {
-                            _screenState.value =
+                            _screenState.postValue(
                                 ScreenState.Render(
                                     DataState.Error(it.status_message ?: "")
                                 )
+                            )
                         }
                         else -> {
                             it.results?.let { results ->
                                 if (results.isEmpty())
-                                    _screenState.value = ScreenState.Render(DataState.EndReach)
+                                    _screenState.postValue(
+                                        ScreenState.Render(DataState.EndReach)
+                                    )
                                 else {
                                     movieUseCase.insertMovies(results)
                                     _loadedMovies.addAll(results.map { movie ->
                                         movie.toPresentationModel()
                                     })
 
-                                    _screenState.value =
+                                    _screenState.postValue(
                                         ScreenState.Render(
                                             DataState.Success(
                                                 results.map { movie ->
@@ -124,14 +137,16 @@ class MainViewModel
                                                 }
                                             )
                                         )
+                                    )
                                 }
                             }
                         }
                     }
                 }
         } catch (e: Exception) {
-            _screenState.value =
+            _screenState.postValue(
                 ScreenState.Render(DataState.Error(e.localizedMessage ?: "Unknown error"))
+            )
         }
     }
 

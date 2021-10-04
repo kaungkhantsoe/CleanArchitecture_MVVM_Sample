@@ -12,7 +12,6 @@ import com.kks.myfirstcleanarchitectureapp.databinding.ItemMovieBinding
 import com.kks.myfirstcleanarchitectureapp.ui.mvvm.model.Movie
 import com.yayandroid.parallaxrecyclerview.ParallaxViewHolder
 
-
 /**
  * Created by kaungkhantsoe on 5/17/21.
  **/
